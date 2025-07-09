@@ -3,64 +3,67 @@ package br.com.davibrito.rinha_backend_2025.dtos;
 import java.math.BigDecimal;
 
 /**
- * DTO para fornecer resumo de pagamentos.
+ * DTO para resumo de pagamentos conforme especificação da Rinha.
+ * Deve mostrar totais por processador (default e fallback).
  */
 public class PaymentSummaryResponse {
-    private BigDecimal totalAmount;
-    private long totalCount;
-    private BigDecimal averageAmount;
-    private BigDecimal maxAmount;
-    private BigDecimal minAmount;
+
+    private ProcessorSummary defaultProcessor;
+    private ProcessorSummary fallbackProcessor;
 
     public PaymentSummaryResponse() {
     }
 
-    public PaymentSummaryResponse(BigDecimal totalAmount, long totalCount, BigDecimal averageAmount, 
-                                 BigDecimal maxAmount, BigDecimal minAmount) {
-        this.totalAmount = totalAmount;
-        this.totalCount = totalCount;
-        this.averageAmount = averageAmount;
-        this.maxAmount = maxAmount;
-        this.minAmount = minAmount;
+    public PaymentSummaryResponse(ProcessorSummary defaultProcessor, ProcessorSummary fallbackProcessor) {
+        this.defaultProcessor = defaultProcessor;
+        this.fallbackProcessor = fallbackProcessor;
     }
 
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
+    public ProcessorSummary getDefaultProcessor() {
+        return defaultProcessor;
     }
 
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
+    public void setDefaultProcessor(ProcessorSummary defaultProcessor) {
+        this.defaultProcessor = defaultProcessor;
     }
 
-    public long getTotalCount() {
-        return totalCount;
+    public ProcessorSummary getFallbackProcessor() {
+        return fallbackProcessor;
     }
 
-    public void setTotalCount(long totalCount) {
-        this.totalCount = totalCount;
+    public void setFallbackProcessor(ProcessorSummary fallbackProcessor) {
+        this.fallbackProcessor = fallbackProcessor;
     }
 
-    public BigDecimal getAverageAmount() {
-        return averageAmount;
-    }
+    /**
+     * Classe interna para representar o resumo de cada processador.
+     */
+    public static class ProcessorSummary {
+        private long totalRequests;
+        private BigDecimal totalAmount;
 
-    public void setAverageAmount(BigDecimal averageAmount) {
-        this.averageAmount = averageAmount;
-    }
+        public ProcessorSummary() {
+        }
 
-    public BigDecimal getMaxAmount() {
-        return maxAmount;
-    }
+        public ProcessorSummary(long totalRequests, BigDecimal totalAmount) {
+            this.totalRequests = totalRequests;
+            this.totalAmount = totalAmount;
+        }
 
-    public void setMaxAmount(BigDecimal maxAmount) {
-        this.maxAmount = maxAmount;
-    }
+        public long getTotalRequests() {
+            return totalRequests;
+        }
 
-    public BigDecimal getMinAmount() {
-        return minAmount;
-    }
+        public void setTotalRequests(long totalRequests) {
+            this.totalRequests = totalRequests;
+        }
 
-    public void setMinAmount(BigDecimal minAmount) {
-        this.minAmount = minAmount;
+        public BigDecimal getTotalAmount() {
+            return totalAmount;
+        }
+
+        public void setTotalAmount(BigDecimal totalAmount) {
+            this.totalAmount = totalAmount;
+        }
     }
 }

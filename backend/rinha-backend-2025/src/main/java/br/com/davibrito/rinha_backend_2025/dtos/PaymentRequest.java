@@ -1,30 +1,38 @@
 package br.com.davibrito.rinha_backend_2025.dtos;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
- * DTO para receber requisições de pagamento.
+ * DTO para receber requisições de pagamento conforme especificação da Rinha.
+ * Deve conter apenas correlationId (UUID) e amount (Decimal).
  */
 public class PaymentRequest {
+
+    @NotNull(message = "O correlationId é obrigatório")
+    private UUID correlationId;
+
     @NotNull(message = "O valor do pagamento é obrigatório")
     @DecimalMin(value = "0.01", message = "O valor do pagamento deve ser maior que zero")
     private BigDecimal amount;
 
-    @NotBlank(message = "A descrição do pagamento é obrigatória")
-    @Size(min = 1, max = 255, message = "A descrição deve ter entre 1 e 255 caracteres")
-    private String description;
-
     public PaymentRequest() {
     }
 
-    public PaymentRequest(BigDecimal amount, String description) {
+    public PaymentRequest(UUID correlationId, BigDecimal amount) {
+        this.correlationId = correlationId;
         this.amount = amount;
-        this.description = description;
+    }
+
+    public UUID getCorrelationId() {
+        return correlationId;
+    }
+
+    public void setCorrelationId(UUID correlationId) {
+        this.correlationId = correlationId;
     }
 
     public BigDecimal getAmount() {
@@ -33,13 +41,5 @@ public class PaymentRequest {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 }
