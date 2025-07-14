@@ -1,6 +1,8 @@
 x-service-templates:
   payment-processor: &payment-processor
-    image: ./backend/rinha-backend-2025/Dockerfile
+    build:
+      context: ./backend/rinha-backend-2025
+      dockerfile: Dockerfile
     networks:
       - payment-processor
       - payment-processor-db
@@ -27,46 +29,46 @@ x-service-templates:
           memory: "250MB"
 
 services:
-  payment-processor-1:
+  api-processor-1:
     <<: *payment-processor
-    container_name: payment-processor-default
-    hostname: payment-processor-default
+    container_name: rinha-api-processor-1
+    hostname: rinha-api-processor-1
     environment:
       - TRANSACTION_FEE=0.05
       - RATE_LIMIT_SECONDS=5
       - INITIAL_TOKEN=123
-      - DB_CONNECTION_STRING=Host=payment-processor-default-db;Port=5432;Database=rinha;Username=postgres;Password=postgres;Minimum Pool Size=15;Maximum Pool Size=20;Connection Pruning Interval=3
+      - DB_CONNECTION_STRING=Host=rinha-api-db-1;Port=5432;Database=rinha;Username=postgres;Password=postgres;Minimum Pool Size=15;Maximum Pool Size=20;Connection Pruning Interval=3
     ports:
       - 8001:8080
     depends_on:
-      - payment-processor-db-1
+      - api-processor-db-1
 
-  payment-processor-db-1:
+  api-processor-db-1:
     <<: *payment-processor-db
-    container_name: payment-processor-default-db
-    hostname: payment-processor-default-db
+    container_name: rinha-api-db-1
+    hostname: rinha-api-db-1
 
-  payment-processor-2:
+  api-processor-2:
     <<: *payment-processor
-    container_name: payment-processor-fallback
-    hostname: payment-processor-fallback
+    container_name: rinha-api-processor-2
+    hostname: rinha-api-processor-2
     environment:
       - TRANSACTION_FEE=0.15
       - RATE_LIMIT_SECONDS=5
       - INITIAL_TOKEN=123
-      - DB_CONNECTION_STRING=Host=payment-processor-fallback-db;Port=5432;Database=rinha;Username=postgres;Password=postgres;Minimum Pool Size=15;Maximum Pool Size=20;Connection Pruning Interval=3
+      - DB_CONNECTION_STRING=Host=rinha-api-db-2;Port=5432;Database=rinha;Username=postgres;Password=postgres;Minimum Pool Size=15;Maximum Pool Size=20;Connection Pruning Interval=3
     ports:
       - 8002:8080
     networks:
       - payment-processor
       - payment-processor-db
     depends_on:
-      - payment-processor-db-2
+      - api-processor-db-2
 
-  payment-processor-db-2:
+  api-processor-db-2:
     <<: *payment-processor-db
-    container_name: payment-processor-fallback-db
-    hostname: payment-processor-fallback-db
+    container_name: rinha-api-db-2
+    hostname: rinha-api-db-2
 
 networks:
   payment-processor:
