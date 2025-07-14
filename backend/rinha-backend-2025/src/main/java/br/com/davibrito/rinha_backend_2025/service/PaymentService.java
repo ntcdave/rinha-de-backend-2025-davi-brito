@@ -24,4 +24,11 @@ public interface PaymentService {
      * @return o resumo de pagamentos
      */
     Mono<PaymentSummaryResponse> getPaymentsSummary();
+
+    /**
+     * Remove todos os pagamentos processados (usado pelos testes).
+     * 
+     * @return Mono vazio após limpeza
+     */
+    Mono<Void> purgeAllPayments();
 }

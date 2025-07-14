@@ -1,14 +1,19 @@
 package br.com.davibrito.rinha_backend_2025.controller;
 
-import br.com.davibrito.rinha_backend_2025.dtos.PaymentRequest;
-import br.com.davibrito.rinha_backend_2025.dtos.PaymentSummaryResponse;
-import br.com.davibrito.rinha_backend_2025.model.ProcessedPayment;
-import br.com.davibrito.rinha_backend_2025.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import br.com.davibrito.rinha_backend_2025.dtos.PaymentRequest;
+import br.com.davibrito.rinha_backend_2025.dtos.PaymentSummaryResponse;
+import br.com.davibrito.rinha_backend_2025.model.ProcessedPayment;
+import br.com.davibrito.rinha_backend_2025.service.PaymentService;
 import reactor.core.publisher.Mono;
 
 /**
@@ -49,5 +54,17 @@ public class PaymentController {
         return paymentService.getPaymentsSummary()
                 .map(summary -> ResponseEntity.ok(summary))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Endpoint secreto para limpeza de dados usado pelos testes.
+     * Obrigatório conforme especificação da Rinha de Backend 2025.
+     * 
+     * @return status 200 (OK) após limpeza
+     */
+    @PostMapping("/purge-payments")
+    public Mono<ResponseEntity<Void>> purgePayments() {
+        return paymentService.purgeAllPayments()
+                .then(Mono.just(ResponseEntity.ok().build()));
     }
 }
