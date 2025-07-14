@@ -1,0 +1,85 @@
+
+services:
+  # O desafio exige no mínimo 2 instâncias da sua API
+  api1: &api
+    build:
+      context: ./backend/rinha-backend-2025
+      dockerfile: Dockerfile
+    hostname: api1
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - rinha-net
+      - payment-processor-net # Rede externa dos processadores
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:postgresql://db:5432/rinha
+      - SPRING_R2DBC_USERNAME=rinha
+      - SPRING_R2DBC_PASSWORD=rinha
+      - RINHA_PROCESSOR_DEFAULT_URL=http://payment-processor-default:8080
+      - RINHA_PROCESSOR_FALLBACK_URL=http://payment-processor-fallback:8080
+      - RINHA_HEALTHCHECK_DEFAULT_URL=http://payment-processor-default:8080/payments/service-health
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "100MB"  # <-- AJUSTADO
+
+  api2:
+    <<: *api # Reutiliza a configuração da api1
+    hostname: api2
+    deploy:                 # <-- É necessário repetir o deploy para o segundo serviço
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "100MB"  # <-- AJUSTADO
+
+  # Load Balancer para distribuir a carga entre as APIs
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api1
+      - api2
+    ports:
+      - "9999:9999" # Porta que o teste da Rinha vai chamar
+    networks:
+      - rinha-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: "20MB"
+
+  # Banco de dados da sua aplicação
+  db:
+    image: postgres:16-alpine
+    hostname: db
+    environment:
+      - POSTGRES_DB=rinha
+      - POSTGRES_USER=rinha
+      - POSTGRES_PASSWORD=rinha
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - rinha-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rinha -d rinha"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: "110MB" # <-- AJUSTADO
+
+networks:
+  rinha-net:
+    driver: bridge
+  payment-processor-net:
+    external: true
+    name: payment-processor_payment-processor
