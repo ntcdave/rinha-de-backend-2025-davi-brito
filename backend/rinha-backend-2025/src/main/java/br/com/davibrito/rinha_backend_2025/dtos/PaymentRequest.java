@@ -1,10 +1,9 @@
 package br.com.davibrito.rinha_backend_2025.dtos;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
 import java.util.UUID;
-
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotNull;
 
 /**
  * DTO para receber requisições de pagamento conforme especificação da Rinha.

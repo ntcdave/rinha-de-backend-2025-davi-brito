@@ -7,10 +7,9 @@ import br.com.davibrito.rinha_backend_2025.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-
-import javax.validation.Valid;
 
 /**
  * Controlador responsável pelos endpoints de pagamentos da API.
@@ -34,7 +33,7 @@ public class PaymentController {
      * @return o pagamento processado com status 201 (CREATED)
      */
     @PostMapping("/payments")
-    public Mono<ResponseEntity<ProcessedPayment>> processPayment(@Valid @RequestBody PaymentRequest paymentRequest) {
+    public Mono<ResponseEntity<ProcessedPayment>> processPayment(@Validated @RequestBody PaymentRequest paymentRequest) {
         return paymentService.processPayment(paymentRequest)
                 .map(payment -> ResponseEntity.status(HttpStatus.CREATED).body(payment))
                 .onErrorResume(e -> Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).build()));

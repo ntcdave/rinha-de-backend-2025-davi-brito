@@ -171,4 +171,7 @@ public class PaymentProcessingService {
                 processorUsed
         );
 
-        return paymentRepository.save(entity).
+        return paymentRepository.save(entity)
+                .then();
+    }
+}

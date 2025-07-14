@@ -1,13 +1,13 @@
-# Estágio 1: Build da aplicação com Maven
-FROM maven:3.8.5-openjdk-17 AS build
+# Estágio de build
+FROM maven:3.9.6-eclipse-temurin-21-alpine AS build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Estágio 2: Criação da imagem final, leve
-FROM openjdk:17-jdk-slim
+# Estágio final da imagem
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/target/rinha-backend-2025-0.0.1-SNAPSHOT.jar .
 EXPOSE 9999
-ENTRYPOINT ["java","-jar","app.jar"]
+CMD ["java", "-jar", "rinha-backend-2025-0.0.1-SNAPSHOT.jar"]
